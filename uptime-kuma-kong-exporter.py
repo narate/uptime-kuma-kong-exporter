@@ -50,8 +50,8 @@ parser.add_argument(
 parser.add_argument(
     "--https",
     dest="use_https",
-    type=bool,
     default=False,
+    action="store_true",
     help="use https for url",
 )
 
@@ -129,7 +129,7 @@ def create_monitor_list():
                 _t["accepted_statuscodes"] = args.status_codes
                 _t["name"] = r["name"]
                 _t["url"] = f"http://{h}{p}"
-                if args.use_https:
+                if args.use_https is True:
                     _t["url"] = f"https://{h}{p}"
 
                 _t["type"] = "http"
@@ -164,3 +164,4 @@ with open(args.output_file, "w") as f:
     f.write(json.dumps(export_data, ensure_ascii=False, indent=2))
 
 print(f"Exported to {args.output_file}")
+print(args)
