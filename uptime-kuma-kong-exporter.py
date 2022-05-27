@@ -4,7 +4,6 @@ import argparse
 import copy
 import json
 import requests
-import os
 
 parser = argparse.ArgumentParser(description="Uptime Kuma Kong exporter")
 
@@ -12,7 +11,7 @@ parser.add_argument(
     "--kong-admin",
     dest="kong_admin_url",
     type=str,
-    default=os.getenv("KONG_ADMIN", "http://127.0.0.1:8001"),
+    default="http://127.0.0.1:8001",
     help="kong admin api url",
 )
 
@@ -21,7 +20,7 @@ parser.add_argument(
     dest="output_file",
     type=str,
     default="uptime-kuma-kong-export.json",
-    help="output file name [JSON]",
+    help="output file name [.json]",
 )
 
 parser.add_argument(
@@ -29,7 +28,7 @@ parser.add_argument(
     dest="tag_color",
     type=str,
     default="#0D4E7F",
-    help="tag color in HEX #rrggbb",
+    help="tag color in HEX",
 )
 
 parser.add_argument(
@@ -42,7 +41,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--statuscodes",
-    dest="statuscodes",
+    dest="status_codes",
     nargs="+",
     default=["200-299", "300-399", "400-499"],
     help="accepted status codes",
@@ -51,16 +50,12 @@ parser.add_argument(
 parser.add_argument(
     "--https",
     dest="use_https",
-    action="store_const",
-    const=True,
+    type=bool,
     default=False,
     help="use https for url",
 )
 
 args = parser.parse_args()
-
-INPUT_FILE = "uptime-kuma-export.json"
-
 
 monitor_fields = {
     "name": "Monitor name",
@@ -131,7 +126,7 @@ def create_monitor_list():
         for h in hosts:
             for p in paths:
                 _t = copy.copy(monitor_fields)
-                _t["accepted_statuscodes"] = args.statuscodes
+                _t["accepted_statuscodes"] = args.status_codes
                 _t["name"] = r["name"]
                 _t["url"] = f"http://{h}{p}"
                 if args.use_https:
@@ -165,7 +160,7 @@ export_data = {
     "monitorList": create_monitor_list(),
 }
 
-with open(args.output_file, "w") as kf:
-    kf.write(json.dumps(export_data, ensure_ascii=False, indent=2))
+with open(args.output_file, "w") as f:
+    f.write(json.dumps(export_data, ensure_ascii=False, indent=2))
 
 print(f"Exported to {args.output_file}")
