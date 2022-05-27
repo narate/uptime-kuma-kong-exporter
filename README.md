@@ -38,7 +38,7 @@ python uptime-kuma-kong-exporter.py --kong-admin http://admin.konghq.com --out k
 
 ## Import
 
-Go to Uptime Kuma Dashvoard > Backup > Choose File > Import
+Go to **`Uptime Kuma Dashboard > Settings > Backup > Choose File > Import`**
 
 ![Import](./import.png)
 
