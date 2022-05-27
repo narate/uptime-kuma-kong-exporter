@@ -97,13 +97,13 @@ def get_routes():
     print("Getting Kong Routes...")
     routes = []
     try:
-        res = requests.get(args.kong_admin_url + "/routes").json() or {}
+        res = requests.get(f"{args.kong_admin_url}/routes").json() or {}
         routes += res["data"] or []
         while res.get("next", None):
             next = res["next"]
-            print("Next: " + next)
+            print(f"Next: {next}")
             try:
-                res = requests.get(args.kong_admin_url + next).json() or {}
+                res = requests.get(f"{args.kong_admin_url}{next}").json() or {}
                 routes += res["data"] or []
             except requests.exceptions.RequestException as e:
                 raise SystemExit(e)
@@ -125,21 +125,21 @@ def create_monitor_list():
         paths = r["paths"] or ["/"]
         for h in hosts:
             for p in paths:
-                _t = copy.copy(monitor_fields)
-                _t["accepted_statuscodes"] = args.status_codes
-                _t["name"] = r["name"]
-                _t["url"] = f"http://{h}{p}"
+                m = copy.copy(monitor_fields)
+                m["accepted_statuscodes"] = args.status_codes
+                m["name"] = r["name"]
+                m["url"] = f"http://{h}{p}"
                 if args.use_https is True:
-                    _t["url"] = f"https://{h}{p}"
+                    m["url"] = f"https://{h}{p}"
 
-                _t["type"] = "http"
+                m["type"] = "http"
                 if r["tags"]:
                     _tags = []
-                    for t in r.get("tags"):
+                    for t in r["tags"]:
                         _tags.append({"value": "", "name": t, "color": args.tag_color})
-                    _t["tags"] = _tags
+                    m["tags"] = _tags
                 else:
-                    _t["tags"] = [
+                    m["tags"] = [
                         {
                             "value": "Kong API Gateway",
                             "name": "Kong",
@@ -147,8 +147,8 @@ def create_monitor_list():
                         }
                     ]
 
-                monitor_list.append(_t)
-    print("Done for " + str(len(monitor_list)) + " urls")
+                monitor_list.append(m)
+    print(f"Done for {str(len(monitor_list))} urls")
     return monitor_list
 
 
@@ -164,4 +164,3 @@ with open(args.output_file, "w") as f:
     f.write(json.dumps(export_data, ensure_ascii=False, indent=2))
 
 print(f"Exported to {args.output_file}")
-print(args)
