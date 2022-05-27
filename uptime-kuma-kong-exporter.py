@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import with_statement
 
 import argparse
 import copy
@@ -64,7 +63,7 @@ INPUT_FILE = "uptime-kuma-export.json"
 
 
 monitor_fields = {
-    "name": "Monitir name",
+    "name": "Monitor name",
     "url": "http://example.com/",
     "method": "GET",
     "hostname": None,
@@ -123,7 +122,7 @@ def get_routes():
 def create_monitor_list():
     routes = get_routes()
 
-    print("Creating Kuna Uptime monitoring list...")
+    print("Creating Kuma Uptime monitor list...")
 
     monitor_list = []
     for r in routes:
@@ -169,5 +168,4 @@ export_data = {
 with open(args.output_file, "w") as kf:
     kf.write(json.dumps(export_data, ensure_ascii=False, indent=2))
 
-# print(json.dumps(export_data, ensure_ascii=False, indent=2))
 print(f"Exported to {args.output_file}")
